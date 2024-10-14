@@ -31,7 +31,7 @@ const MovieUploadCard = () => {
       : "https://annualmediaserver.onrender.com/api";
 
   const onSubmit = (movie) => {
-    axios 
+    axios
       .post(`${apiUrl}/movies`, movie)
       .then((res) => {
         console.log(res.data);
@@ -46,15 +46,6 @@ const MovieUploadCard = () => {
 
   const handleSearch = async (event) => {
     const searchTerm = event.target.value;
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`LOL Variable: ${process.env.REACT_APP_LOL}`);
-    console.log(process.env, "process.env")
-    console.log(
-      `TMDB API Key FRONTEND (first 5 characters): ${process.env.REACT_APP_TMDB_API_KEY?.substring(
-        0,
-        5
-      )}`
-    );
 
     if (searchTerm.length > 2) {
       const response = await axios.get(
@@ -76,19 +67,13 @@ const MovieUploadCard = () => {
     const plot = movie.overview;
     const rating = movie.vote_average.toString();
 
-    //console.log('Director:', director);
-    console.log("Poster:", poster);
-    //console.log('Actors:', actors);
-    console.log("Plot:", plot);
-    console.log("Rating:", rating);
-
     // Autofill the form fields
     setValue("title", movie.title);
     setValue("year", movie.release_date.split("-")[0]);
     setValue("genre", movie.genres.map((genre) => genre.name).join(", "));
     setValue("poster", `https://image.tmdb.org/t/p/w500${movie.poster_path}`);
     setValue("plot", movie.overview);
-    setValue("rating", movie.vote_average.toString());
+    setValue("rating", Math.round(movie.vote_average).toString());
   };
 
   return (
@@ -97,8 +82,8 @@ const MovieUploadCard = () => {
       <form onSubmit={handleSubmit(onSubmit)} style={mystyle}>
         {/* register your input into the hook by invoking the "register" function */}
         {/* include validation with required or other standard HTML validation rules */}
-        <input placeholder='Search Movie' onChange={handleSearch} />
-        {searchResults.map((movie) => (
+        <input placeholder="Search Movie" onChange={handleSearch} />
+        {searchResults.slice(0, 5).map((movie) => (
           <div
             key={movie.id}
             onClick={() => handleSelectMovie(movie.id)}
@@ -116,41 +101,41 @@ const MovieUploadCard = () => {
             {movie.title}
           </div>
         ))}
-        <input placeholder='Title' {...register("title", { required: true })} />
+        <input placeholder="Title" {...register("title", { required: true })} />
         {/* errors will return when field validation fails  */}
         {errors.title && <span>The title is required</span>}
 
-        <input placeholder='Year' {...register("year", { required: true })} />
+        <input placeholder="Year" {...register("year", { required: true })} />
         {errors.year && <span>The year is required</span>}
 
-        <input placeholder='Genre' {...register("genre", { required: true })} />
+        <input placeholder="Genre" {...register("genre", { required: true })} />
         {errors.genre && <span>The genre is required</span>}
 
         <input
-          placeholder='Director'
+          placeholder="Director"
           {...register("director", { required: true })}
         />
         {errors.director && <span>The director is required</span>}
 
         <input
-          placeholder='Poster'
+          placeholder="Poster"
           {...register("poster", { required: true, maxLength: 100 })}
         />
         {errors.poster && <span>The poster is required</span>}
 
         <input
-          placeholder='Actors'
+          placeholder="Actors"
           {...register("actors", { required: true })}
         />
         {errors.actors && <span>The actors are required</span>}
 
-        <input placeholder='Plot' {...register("plot", { required: true })} />
+        <input placeholder="Plot" {...register("plot", { required: true })} />
         {errors.plot && <span>The plot is required</span>}
 
-        <input placeholder='Rating' {...register("rating")} />
+        <input placeholder="Rating" {...register("rating")} />
         {errors.rating && <span>The rating is required</span>}
 
-        <input className='submit-button' type='submit' value='Submit' />
+        <input className="submit-button" type="submit" value="Submit" />
       </form>
     </>
   );
