@@ -90,11 +90,11 @@ const MovieUploadCard = () => {
             style={{
               cursor: "pointer",
               backgroundColor: "#f8f9fa",
-              padding: "10px",
+              padding: "2px",
               border: "1px solid #ddd",
               borderRadius: "4px",
               marginBottom: "5px",
-              fontSize: "0.8rem",
+              fontSize: "0.6rem",
               color: "#333",
             }}
           >
