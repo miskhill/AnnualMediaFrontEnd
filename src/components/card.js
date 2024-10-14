@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { styled } from "@mui/system";
-import { Card, CardContent, CardMedia, Typography, Rating, CardActions, IconButton, Collapse} from "@mui/material";
-//import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Rating,
+  CardActions,
+  IconButton,
+  Collapse,
+  AccordionSummary,
+} from "@mui/material";
 import "../App.css";
 
 const StyledCard = styled(Card)({
@@ -59,41 +68,41 @@ const MediaCard = ({ title, year, genre, rating, image, plot }) => {
     <StyledCard sx={{ maxWidth: 345, margin: "10px", padding: "25px" }}>
       {imageError ? (
         <div
-          className='shimmer-wrapper'
+          className="shimmer-wrapper"
           style={{ width: "100%", height: "500px" }}
         ></div>
       ) : (
         <StyledImage
-          component='img'
-          height='500'
+          component="img"
+          height="500"
           image={image}
           alt={title}
           onError={handleImageError}
         />
       )}
       <StyledCardContent>
-        <StyledTitle gutterBottom variant='h5' component='div'>
+        <StyledTitle gutterBottom variant="h5" component="div">
           {title}
         </StyledTitle>
-        <StyledText variant='body2' color='text.secondary'>
+        <StyledText variant="body2" color="text.secondary">
           Year: {year}
         </StyledText>
-        <StyledSubtitle variant='body2' color='text.secondary'>
+        <StyledSubtitle variant="body2" color="text.secondary">
           Genre: {genre}
         </StyledSubtitle>
-        <Rating name='read-only' value={rating} readOnly />
+        <Rating name="read-only" value={rating} readOnly />
       </StyledCardContent>
       <CardActions disableSpacing>
         <IconButton
-          aria-label='show more'
+          aria-label="show more"
           onClick={handleExpandClick}
           aria-expanded={expanded}
           sx={{ transform: expanded ? "rotate(180deg)" : "rotate(0)" }}
         >
-          {/* <ExpandMoreIcon /> */}
+          <AccordionSummary />
         </IconButton>
       </CardActions>
-      <Collapse in={expanded} timeout='auto' unmountOnExit>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography paragraph>Plot:</Typography>
           <Typography paragraph>{plot}</Typography>
