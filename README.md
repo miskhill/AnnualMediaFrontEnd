@@ -98,4 +98,4 @@ Used ClickUp for project management
 
 ## Contact
 
-If you have any questions or need support, you can contact the author at [insert email or social media here].
+If you have any questions or need support, you can contact the author at [linkedin.com/in/gary-smith-dev](https://www.linkedin.com/in/gary-smith-dev/).
