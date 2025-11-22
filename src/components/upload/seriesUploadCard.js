@@ -51,9 +51,8 @@ const SeriesUploadCard = () => {
 
         <input
           placeholder='Director'
-          {...register("director", { required: true })}
+          {...register("director")}
         />
-        {errors.director && <span>The director is required</span>}
 
         <input placeholder='Genre' {...register("genre", { required: true })} />
         {errors.genre && <span>The genre is required</span>}
