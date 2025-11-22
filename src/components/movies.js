@@ -6,12 +6,15 @@ import AnnualTotals from "./utils/annualTotals.js";
 import Filters from "./utils/filters.js";
 
 const Movies = () => {
+  const PAGE_SIZE = 20;
+
   const [movies, setMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState("createdAt");
   const [selectedYear, setSelectedYear] = useState("All");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     setLoading(true);
@@ -42,23 +45,37 @@ const Movies = () => {
     setSortBy(event.target.value);
   };
 
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, filteredMovies.length));
+  };
+
   useEffect(() => {
-    setFilteredMovies(
-      movies.filter((movie) => {
-        return (
-          (movie.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            movie.genre.toLowerCase().includes(searchTerm.toLowerCase())) &&
-          (!movie.createdAt ||
-            selectedYear === "All" ||
-            movie.createdAt.slice(0, 4) === selectedYear.toString())
-        );
-      })
-    );
-  }, [movies, searchTerm, selectedYear]);
+    const loweredSearch = searchTerm.toLowerCase();
+    const matches = movies.filter((movie) => {
+      return (
+        (movie.title.toLowerCase().includes(loweredSearch) ||
+          movie.genre.toLowerCase().includes(loweredSearch)) &&
+        (!movie.createdAt ||
+          selectedYear === "All" ||
+          movie.createdAt.slice(0, 4) === selectedYear.toString())
+      );
+    });
+
+    setFilteredMovies(matches);
+
+    const filtersActive = searchTerm.trim() !== "" || selectedYear !== "All";
+    setVisibleCount(filtersActive ? matches.length : Math.min(matches.length, PAGE_SIZE));
+  }, [movies, searchTerm, selectedYear, PAGE_SIZE]);
 
   useEffect(() => {
     console.log("Filtered Movies: ", filteredMovies);
   }, [filteredMovies]);
+
+  const filtersActive = searchTerm.trim() !== "" || selectedYear !== "All";
+  const moviesToDisplay = filtersActive
+    ? filteredMovies
+    : filteredMovies.slice(0, visibleCount);
+  const showLoadMore = !filtersActive && visibleCount < filteredMovies.length;
 
   return (
     <>
@@ -99,24 +116,51 @@ const Movies = () => {
           <img src="loading.gif" alt="Loading" />
         </div>
       ) : (
-        <Grid container spacing={2}>
-          {filteredMovies.length === 0 ? (
-            <p>No movies found</p>
-          ) : (
-            filteredMovies.map((movie) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={movie._id}>
-                <MediaCard
-                  title={movie.title}
-                  year={movie.year}
-                  genre={movie.genre}
-                  rating={movie.rating}
-                  image={movie.poster}
-                  plot={movie.plot}
-                />
-              </Grid>
-            ))
+        <>
+          <Grid container spacing={2}>
+            {moviesToDisplay.length === 0 ? (
+              <p>No movies found</p>
+            ) : (
+              moviesToDisplay.map((movie) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={movie._id}>
+                  <MediaCard
+                    title={movie.title}
+                    year={movie.year}
+                    genre={movie.genre}
+                    rating={movie.rating}
+                    image={movie.poster}
+                    plot={movie.plot}
+                  />
+                </Grid>
+              ))
+            )}
+          </Grid>
+          {showLoadMore && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "24px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={handleLoadMore}
+                style={{
+                  padding: "10px 16px",
+                  backgroundColor: "#e50914",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Load More
+              </button>
+            </div>
           )}
-        </Grid>
+        </>
       )}
     </>
   );
