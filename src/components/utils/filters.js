@@ -1,6 +1,28 @@
-import React from "react";
+import React, { useMemo } from "react";
 
-const Filters = ({ handleFilterChange, handleSortBy, sortBy, searchTerm }) => {
+const Filters = ({
+  handleFilterChange,
+  handleSortBy,
+  sortBy = "createdAt",
+  searchTerm = "",
+  showAuthorOption = false,
+}) => {
+  const sortOptions = useMemo(() => {
+    const baseOptions = [
+      { value: "year", label: "Year" },
+      { value: "createdAt", label: "Date Added" },
+      { value: "title", label: "Title" },
+      { value: "genre", label: "Genre" },
+      { value: "rating", label: "Rating" },
+    ];
+
+    if (showAuthorOption) {
+      baseOptions.splice(3, 0, { value: "author", label: "Author" });
+    }
+
+    return baseOptions;
+  }, [showAuthorOption]);
+
   return (
     <>
       <div
@@ -27,22 +49,25 @@ const Filters = ({ handleFilterChange, handleSortBy, sortBy, searchTerm }) => {
           value={searchTerm}
           placeholder='Search Media 📖'
         />
-        <select style={{
-          border: '0',
-          // position: 'absolute',
-          height: '26px',
-          fontWeight: '800',
-          fontSize: '12px',
-          backgroundColor: '#f6f5ef',
-          color: '#009F8A',
-          margin: '10px',
-        } } onChange={handleSortBy} name='sortBy' value={sortBy}>
-          <option value='year'>Year</option>
-          <option value='createdAt'>Date Added</option>
-          <option value='title'>Title</option>
-          <option value='author'>Author</option>
-          <option value='genre'>Genre</option>
-          <option value='rating'>Rating</option>
+        <select
+          style={{
+            border: '0',
+            height: '26px',
+            fontWeight: '800',
+            fontSize: '12px',
+            backgroundColor: '#f6f5ef',
+            color: '#009F8A',
+            margin: '10px',
+          }}
+          onChange={handleSortBy}
+          name='sortBy'
+          value={sortBy}
+        >
+          {sortOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
       </div>
     </>

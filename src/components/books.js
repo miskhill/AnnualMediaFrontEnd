@@ -6,10 +6,9 @@ import BookGrid from "./bookGrid.js";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
-  const [searchBooks, setSearchBooks] = useState([]);
-  const [filters, setFilters] = useState({ searchTerm: "" });
+  const [displayBooks, setDisplayBooks] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("createdAt");
-  const [sortedArray, setSortedArray] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedYear, setSelectedYear] = useState("All");
 
@@ -29,52 +28,62 @@ const Books = () => {
         setLoading(false);
       } catch (err) {
         console.log(err, "catch error");
+        setLoading(false);
       }
     };
     getBooks();
   }, []);
 
   const handleFilterChange = (event) => {
-    const newObj = { ...filters, [event.target.name]: event.target.value };
-    console.log(newObj, "newObj", filters, "filters");
-    setFilters(newObj);
+    setSearchTerm(event.target.value);
   };
+
   const handleSortBy = (event) => {
-    console.log(event.target.value, "event.target.value");
     setSortBy(event.target.value);
   };
 
-  const whichSort = (array, sortBy) => {
-    if (
-      sortBy === "Genre" ||
-      sortBy === "Title" ||
-      sortBy === "CreatedAt" ||
-      sortBy === "Author"
-    ) {
-      return array.sort((a, b) => (a[sortBy] < b[sortBy] ? 1 : -1));
-    } else {
-      return array.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1));
+  const sortBooks = (items, key) => {
+    const copy = [...items];
+
+    switch (key) {
+      case "year":
+        return copy.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+      case "rating":
+        return copy.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+      case "createdAt":
+        return copy.sort((a, b) => {
+          const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          return bDate - aDate;
+        });
+      default:
+        return copy.sort((a, b) => {
+          const aValue = (a[key] || "").toString().toLowerCase();
+          const bValue = (b[key] || "").toString().toLowerCase();
+          return aValue.localeCompare(bValue);
+        });
     }
   };
 
   useEffect(() => {
-    console.log(sortBy, "sortBy");
-    setSortedArray(whichSort(books, sortBy));
-  }, [sortBy, books]);
+    const loweredSearch = searchTerm.trim().toLowerCase();
+    const sorted = sortBooks(books, sortBy);
+    const filtered = sorted.filter((book) => {
+      const matchesSearch =
+        loweredSearch === "" ||
+        book.title?.toLowerCase().includes(loweredSearch) ||
+        book.author?.toLowerCase().includes(loweredSearch) ||
+        book.genre?.toLowerCase().includes(loweredSearch);
 
-  useEffect(() => {
-    const regexSearch = new RegExp(filters.searchTerm, "i");
-    setSearchBooks(
-      (sortedArray ? sortedArray : whichSort(books, sortBy)).filter((book) => {
-        return (
-          regexSearch.test(book.title) &&
-          (selectedYear === "All" ||
-            (book.createdAt &&
-              book.createdAt.slice(0, 4) === selectedYear.toString()))
-        );
-      })
-    );
-  }, [filters, sortBy, sortedArray, books, selectedYear]);
+      const matchesYear =
+        selectedYear === "All" ||
+        (book.createdAt && book.createdAt.slice(0, 4) === selectedYear.toString());
+
+      return matchesSearch && matchesYear;
+    });
+
+    setDisplayBooks(filtered);
+  }, [books, sortBy, searchTerm, selectedYear]);
 
   return (
     <>
@@ -82,7 +91,9 @@ const Books = () => {
         id='matchesFilters'
         handleFilterChange={handleFilterChange}
         handleSortBy={handleSortBy}
-        {...filters}
+        searchTerm={searchTerm}
+        sortBy={sortBy}
+        showAuthorOption
       />
       <div className='totals'>
         <h3>
@@ -105,13 +116,7 @@ const Books = () => {
           <img src='loading.gif' alt='Loading' />
         </div>
       ) : (
-        <BookGrid
-          books={
-            filters.searchTerm !== "" || selectedYear !== "All"
-              ? searchBooks
-              : sortedArray
-          }
-        />
+        <BookGrid books={displayBooks} />
       )}
     </>
   );

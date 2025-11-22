@@ -16,6 +16,29 @@ const Movies = () => {
   const [selectedYear, setSelectedYear] = useState("All");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  const sortMovies = (items, key) => {
+    const copy = [...items];
+
+    switch (key) {
+      case "year":
+        return copy.sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+      case "rating":
+        return copy.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+      case "createdAt":
+        return copy.sort((a, b) => {
+          const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          return bDate - aDate;
+        });
+      default:
+        return copy.sort((a, b) => {
+          const aValue = (a[key] || "").toString().toLowerCase();
+          const bValue = (b[key] || "").toString().toLowerCase();
+          return aValue.localeCompare(bValue);
+        });
+    }
+  };
+
   useEffect(() => {
     setLoading(true);
     axios
@@ -61,11 +84,16 @@ const Movies = () => {
       );
     });
 
-    setFilteredMovies(matches);
+    const sortedMatches = sortMovies(matches, sortBy);
+    setFilteredMovies(sortedMatches);
 
     const filtersActive = searchTerm.trim() !== "" || selectedYear !== "All";
-    setVisibleCount(filtersActive ? matches.length : Math.min(matches.length, PAGE_SIZE));
-  }, [movies, searchTerm, selectedYear, PAGE_SIZE]);
+    setVisibleCount(
+      filtersActive
+        ? sortedMatches.length
+        : Math.min(sortedMatches.length, PAGE_SIZE)
+    );
+  }, [movies, searchTerm, selectedYear, sortBy, PAGE_SIZE]);
 
   useEffect(() => {
     console.log("Filtered Movies: ", filteredMovies);
