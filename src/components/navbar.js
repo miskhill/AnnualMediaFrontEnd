@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.js";
 import "../navbar.css";
 
 export default function Navbar() {
   const [isNavExpanded, setIsNavExpanded] = useState(false);
-
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const brandNameStyle = {
-    fontFamily:"Bebas Neue, sans-serif",
+    fontFamily: "Bebas Neue, sans-serif",
     fontSize: "50px",
     fontWeight: "bold",
     letterSpacing: "-2px",
@@ -15,23 +18,36 @@ export default function Navbar() {
     textShadow: "2px 2px 0 #000000",
   };
 
+  const closeNav = () => setIsNavExpanded(false);
+
+  const handleLogout = () => {
+    closeNav();
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const linkClassName = ({ isActive }) =>
+    isActive ? "nav-link active" : "nav-link";
+
   return (
     <nav className='navigation'>
-      <a
-        href='/'
+      <NavLink
+        to='/'
+        onClick={closeNav}
         className='brand-name'
         style={brandNameStyle}
       >
         ANNUAL MEDIA
-      </a>
+      </NavLink>
 
       <button
         className='hamburger'
         onClick={() => {
-          setIsNavExpanded(!isNavExpanded);
+          setIsNavExpanded((prev) => !prev);
         }}
+        type='button'
+        aria-label='Toggle navigation menu'
       >
-        {/* hamburger svg code... */}
         <svg viewBox='5 0 100 80' width='40' height='25'>
           <rect width='60' height='20'></rect>
           <rect y='30' width='60' height='20'></rect>
@@ -45,13 +61,24 @@ export default function Navbar() {
       >
         <ul>
           <li>
-            <a href='/movies'>Movies</a>
+            <NavLink to='/movies' className={linkClassName} onClick={closeNav}>
+              Movies
+            </NavLink>
           </li>
           <li>
-            <a href='/series'>Series</a>
+            <NavLink to='/series' className={linkClassName} onClick={closeNav}>
+              Series
+            </NavLink>
           </li>
           <li>
-            <a href='/books'>Books</a>
+            <NavLink to='/books' className={linkClassName} onClick={closeNav}>
+              Books
+            </NavLink>
+          </li>
+          <li>
+            <button type='button' className='logout-button' onClick={handleLogout}>
+              Logout
+            </button>
           </li>
         </ul>
       </div>

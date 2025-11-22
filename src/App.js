@@ -5,28 +5,29 @@ import Movies from "./components/movies.js";
 import Books from "./components/books.js";
 import Series from "./components/series.js";
 import PageNotFound from "./components/pageNotFound.js";
-// import SignIn from './components/signIn.js';
-// import SignUp from './components/signUp.js';
 import NavBar from "./components/navbar.js";
+import Login from "./components/auth/Login.js";
+import ProtectedRoute from "./components/auth/ProtectedRoute.js";
+import { useAuth } from "./context/AuthContext.js";
 import "./App.css";
 
 function App() {
+  const { isAuthenticated } = useAuth();
 
   return (
-    <>
-    <NavBar />
     <BrowserRouter>
+      {isAuthenticated && <NavBar />}
       <Routes>
-        <Route exact path='/' element={<Home />} />
-        <Route exact path='/movies' element={<Movies />} />
-        <Route exact path='/books' element={<Books />} />
-        <Route exact path='/series' element={<Series />} />
-        {/* <Route exact path="/signIn" element={<SignIn />} />
-        <Route exact path="/signUp" element={<SignUp />} /> */}
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
-      </>
+        <Route path='/login' element={<Login />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path='/' element={<Home />} />
+          <Route path='/movies' element={<Movies />} />
+          <Route path='/books' element={<Books />} />
+          <Route path='/series' element={<Series />} />
+          <Route path='*' element={<PageNotFound />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
