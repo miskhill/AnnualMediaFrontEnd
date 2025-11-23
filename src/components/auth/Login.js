@@ -87,6 +87,7 @@ const Login = () => {
           component="form"
           onSubmit={handleSubmit}
           sx={{ display: "grid", gap: 2 }}
+          aria-label='login form'
         >
           <TextField
             label="Email"
