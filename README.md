@@ -32,6 +32,7 @@ Annual Media keeps track of every film, series, and book I get through in a year
 - Open up social/OAuth login once I’m ready to let friends in.
 - Sprinkle in a few more targeted Jest suites (sorting, pagination) and wire GitHub Actions for CI.
 - Polish the upload flow and expose it via an admin dashboard.
+- React Native mobile app
 
 ## Contact
 Curious about the code, the stack, or the (very long) watch list? I’m at [linkedin.com/in/gary-smith-dev](https://www.linkedin.com/in/gary-smith-dev/).
