@@ -1,101 +1,39 @@
-# AnnualMedia
+# Annual Media Front-End
 
-AnnualMedia is a full stack app designed to help you remember the movies, series, and books that you have consumed. It includes a MongoDB database, a server built with Node.js and Express, and a frontend built with React.
+Annual Media keeps track of every film, series, and book I get through in a year. It started as a weekend experiment, has grown into a full-stack hobby project, and now lives happily on Vercel behind a friendly little login screen.
 
-Sure, you can add the following section to the README to provide information on where the app is hosted:
+- **Live site:** https://annual-media-front-end.vercel.app/
+- **Heads-up:** The landing page is gated—only pre-created accounts (mine!) can sign in right now.
 
-## Deployment
+## What’s inside?
+- **Curated dashboards** for Movies, Series, and Books with search, filter, sort, and year summaries.
+- **Client-side pagination** so movie lists stay snappy on desktop and mobile.
+- **Authenticated routes** – React Router protects the media views and keeps the nav in sync with auth state.
+- **Admin-only uploads** – React Hook Form + Axios talk to the API for new entries (feature hidden behind auth for now).
 
-The app is currently deployed on [annualmedia.pages.dev](https://annualmedia.pages.dev/). You can access the live version of the app by visiting the website. Note that the live version may be running a different version of the code than the local version on your machine.
+## Technology Stack
+- **Front end:** React 18, React Router, React Hook Form, Material UI 5, styled-components, Sonner toasts.
+- **State & data:** Axios hitting my [Annual Media API](https://annualmediaserver.onrender.com/api/movies) (Node, Express, MongoDB) with JWT auth.
+- **Tooling:** Vercel (hosting), Render (API hosting), ESLint (CRA defaults), npm scripts.
+- **Testing:** Jest + React Testing Library. Current focus is the auth flow (login form + protected routes). Command: `WATCHMAN_SUSPEND=1 npm test -- --watch=false` on macOS when Watchman permissions complain.
 
-To deploy the app to your own hosting platform, follow these steps:
+## Architecture Snapshot
+- `context/AuthContext.js` stores the token, syncs it with `localStorage`, and applies the JWT to every Axios request.
+- `components/auth` holds the login screen and a `ProtectedRoute` wrapper so all main routes stay private.
+- `components/utils` contains shared filter widgets and yearly totals logic.
+- `components/upload` still houses the admin forms for later self-service content uploads.
 
-1. Build the frontend by navigating to the `client` folder and running `npm run build`.
-2. Copy the build folder to your hosting platform.
-3. Start the server on your hosting platform by navigating to the `server` folder and running `npm run serve`.
-4. Configure your hosting platform to serve the `index.html` file in the build folder as the root file for your app.
+## Deployment Notes
+- Front end: auto-deployed from `main` to Vercel.
+- API: Render free tier. It naps when idle, so the first login/request may take a few seconds while it wakes up.
+- Environment variables: only the API holds secrets (`SECRET`, database URI). The client just needs the API base URL baked into `AuthContext`.
 
-## Installation
-
-To install the app, follow these steps:
-
-1. Clone the repository to your local machine.
-2. Navigate to the `client` folder and run `npm install` to install the frontend dependencies.
-3. Navigate to the `server` folder and run `npm install` to install the server dependencies.
-
-## Usage
-
-To use the app, follow these steps:
-
-1. Start the server by navigating to the `server` folder and running `npm run serve`.
-2. Start the frontend by navigating to the `client` folder and running `npm start`.
-3. Open your browser and go to `http://localhost:3000` to use the app.
-
-The app includes the following features:
-
-- Upload and display a collection of movies, series, and books that you have consumed.
-- Rate the movies, series, and books that you have consumed.
-- Search and filter functionality to make it easy to find specific items in your collection.
-
-## Dependencies
-
-The app requires the following dependencies:
-
-### Client
-
-- @emotion/react: 11.10.6
-- @emotion/styled: 11.10.6
-- @mui/icons-material: 5.11.0
-- @mui/material: 5.11.11
-- @mui/styled-engine-sc: 5.11.0
-- @shoelace-style/shoelace: 2.0.0
-- @testing-library/jest-dom: 5.16.5
-- @testing-library/react: 13.4.0
-- @testing-library/user-event: 13.5.0
-- axios: 1.2.2
-- dotenv: 16.0.3
-- react: 18.0.0
-- react-dom: 18.2.0
-- react-hook-form: 7.42.0
-- react-router-dom: 6.6.1
-- react-scripts: 4.0.3
-- sonner: 0.3.0
-- styled-components: 5.3.6
-
-### Server
-
-- bcrypt: 5.1.0
-- body-parser: 1.20.1
-- cors: 2.8.5
-- dotenv: 16.0.3
-- express: 4.18.2
-- mongoose: 6.8.1
-- nodemon: 2.0.20
-
-## Contributing
-
-Contributions to the app are welcome. To contribute, follow these steps:
-
-1. Fork the repository on GitHub.
-2. Clone the forked repository to your local machine.
-3. Create a new branch for your changes.
-4. Make your changes and commit them.
-5. Push the changes to your forked repository.
-6. Submit a pull request to the original repository.
-
-## License
-
-The app is released under the ISC license.
-
-# Learns - before I forget
-CRA uses React script v5 and MUI was not supporting this causing not found
-Differences in React Router - uses Element rather than Component
-In my controller I had named my fetch variable the same as the collection which needed re-naming! const movies to fetch movies. Wasn't too smart.
-
-Used ClickUp for project management
-
-[ClickUp](public/Screenshot%202023-01-21%20at%2011.23.12.png)
+## Roadmap-ish
+- Open up social/OAuth login once I’m ready to let friends in.
+- Sprinkle in a few more targeted Jest suites (sorting, pagination) and wire GitHub Actions for CI.
+- Polish the upload flow and expose it via an admin dashboard.
 
 ## Contact
+Curious about the code, the stack, or the (very long) watch list? I’m at [linkedin.com/in/gary-smith-dev](https://www.linkedin.com/in/gary-smith-dev/).
 
-If you have any questions or need support, you can contact the author at [linkedin.com/in/gary-smith-dev](https://www.linkedin.com/in/gary-smith-dev/).
+Thanks for stopping by—popcorn not included 🍿
