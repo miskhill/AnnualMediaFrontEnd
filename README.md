@@ -35,11 +35,11 @@ Annual Media keeps track of every film, series, and book I get through in a year
 - React Native mobile app
 
 ## Project Workflow
-- Early iterations were tracked in ClickUp so feature ideas, bugfixes, and watch-list updates stayed tidy:
+- Early iterations were tracked in ClickUp so feature ideas, bugfixes, and watch list updates stayed tidy:
 
   ![ClickUp workflow](public/Screenshot%202023-01-21%20at%2011.23.12.png)
 
 ## Contact
 Curious about the code, the stack, or the (very long) watch list? I’m at [linkedin.com/in/gary-smith-dev](https://www.linkedin.com/in/gary-smith-dev/).
 
-Thanks for stopping by—popcorn not included 🍿
+Thanks for stopping by popcorn not included 🍿
