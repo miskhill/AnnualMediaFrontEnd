@@ -27,7 +27,7 @@ const Books = () => {
         setBooks(Object.values({ ...data }));
         setLoading(false);
       } catch (err) {
-        console.log(err, "catch error");
+        console.log(err, "<-- catch error");
         setLoading(false);
       }
     };
