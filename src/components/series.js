@@ -71,7 +71,11 @@ const Series = () => {
         }}
       >
         <h3 style={{ margin: "0", fontSize: "18px", fontWeight: "normal" }}>
-          <AnnualTotals arr={series} year={selectedYear} />
+          <AnnualTotals
+            arr={series}
+            year={selectedYear}
+            handleYearChange={setSelectedYear}
+          />
         </h3>
       </div>
       {loading ? (

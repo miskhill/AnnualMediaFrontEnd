@@ -30,22 +30,60 @@ const AnnualTotals = ({ arr, year, handleYearChange }) => {
 
   const handleChange = (event) => {
     const { value } = event.target;
-    handleYearChange(value === 'All' ? 'All' : parseInt(value, 10));
+    if (handleYearChange) {
+      handleYearChange(value === "All" ? "All" : parseInt(value, 10));
+    }
   };
 
-  const annualTotals = (arr, year) => {
+  const totalForYear = useMemo(() => {
     let total = 0;
     arr.forEach((item) => {
-      if (year === 'All' || item.createdAt.slice(0, 4) === year.toString()) {
+      const createdAtYear = item?.createdAt?.slice(0, 4);
+      if (year === "All" || createdAtYear === year.toString()) {
         total++;
       }
     });
     return total;
-  };
+  }, [arr, year]);
 
   return (
-    <div>
-      <select value={year === 'All' ? 'All' : year.toString()} onChange={handleChange}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "14px",
+        flexWrap: "wrap",
+      }}
+    >
+      <select
+        value={year === "All" ? "All" : year.toString()}
+        onChange={handleChange}
+        style={{
+          minWidth: "104px",
+          height: "36px",
+          padding: "0 36px 0 16px",
+          borderRadius: "999px",
+          border: "0",
+          backgroundColor: "#f6f5ef",
+          color: "#8c1839",
+          fontWeight: "800",
+          fontSize: "14px",
+          textAlign: "center",
+          textAlignLast: "center",
+          appearance: "none",
+          WebkitAppearance: "none",
+          MozAppearance: "none",
+          backgroundImage:
+            "linear-gradient(45deg, transparent 50%, #8c1839 50%), linear-gradient(135deg, #8c1839 50%, transparent 50%)",
+          backgroundPosition: "calc(100% - 18px) 14px, calc(100% - 12px) 14px",
+          backgroundSize: "6px 6px, 6px 6px",
+          backgroundRepeat: "no-repeat",
+          boxShadow: "0 10px 24px rgba(0, 0, 0, 0.18)",
+          outline: "none",
+          cursor: "pointer",
+        }}
+      >
         <option value='All'>All</option>
         {yearOptions.map((optionYear) => (
           <option key={optionYear} value={optionYear}>
@@ -53,9 +91,51 @@ const AnnualTotals = ({ arr, year, handleYearChange }) => {
           </option>
         ))}
       </select>
-      {annualTotals(arr, year)}
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "10px",
+          padding: "8px 14px 8px 10px",
+          borderRadius: "999px",
+          background:
+            "linear-gradient(135deg, rgba(229, 9, 20, 0.18), rgba(140, 24, 57, 0.2))",
+          color: "#8c1839",
+          boxShadow: "0 10px 24px rgba(0, 0, 0, 0.16)",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: "34px",
+            height: "34px",
+            padding: "0 10px",
+            borderRadius: "999px",
+            backgroundColor: "#e50914",
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight: "800",
+            lineHeight: 1,
+          }}
+        >
+          {totalForYear}
+        </span>
+        <span
+          style={{
+            fontSize: "13px",
+            fontWeight: "700",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {year === "All" ? "Total Added" : `Added In ${year}`}
+        </span>
+      </div>
     </div>
-  ); 
+  );
 };
 
 export default AnnualTotals;
