@@ -31,7 +31,9 @@ const Filters = ({
           backgroundColor: "#3b3835",
           display: "flex",
           justifyContent: "center",
-          alignItems: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "8px",
         }}
       >
         <input
@@ -40,9 +42,13 @@ const Filters = ({
             height: "26px",
             backgroundColor: "#fff",
             color: "#000",
-            opacity: '1',
-            fontWeight: '800',
-            margin: '10px',
+            opacity: "1",
+            fontWeight: "800",
+            margin: "10px",
+            padding: "0 14px",
+            borderRadius: "999px",
+            border: "0",
+            outline: "none",
           }}
           onChange={handleFilterChange}
           name='searchTerm'
@@ -51,13 +57,26 @@ const Filters = ({
         />
         <select
           style={{
-            border: '0',
-            height: '26px',
-            fontWeight: '800',
-            fontSize: '12px',
-            backgroundColor: '#f6f5ef',
-            color: '#009F8A',
-            margin: '10px',
+            border: "0",
+            height: "26px",
+            fontWeight: "800",
+            fontSize: "12px",
+            backgroundColor: "#f6f5ef",
+            color: "#009F8A",
+            margin: "10px",
+            padding: "0 32px 0 14px",
+            textAlign: "center",
+            textAlignLast: "center",
+            borderRadius: "999px",
+            appearance: "none",
+            WebkitAppearance: "none",
+            MozAppearance: "none",
+            backgroundImage:
+              "linear-gradient(45deg, transparent 50%, #009F8A 50%), linear-gradient(135deg, #009F8A 50%, transparent 50%)",
+            backgroundPosition: "calc(100% - 16px) 10px, calc(100% - 10px) 10px",
+            backgroundSize: "6px 6px, 6px 6px",
+            backgroundRepeat: "no-repeat",
+            outline: "none",
           }}
           onChange={handleSortBy}
           name='sortBy'

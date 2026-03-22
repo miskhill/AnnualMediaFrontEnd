@@ -9,7 +9,7 @@ import {
   CardActions,
   IconButton,
   Collapse,
-  AccordionSummary,
+  SvgIcon,
 } from "@mui/material";
 import "../App.css";
 
@@ -51,6 +51,15 @@ const StyledText = styled(Typography)({
 const StyledImage = styled(CardMedia)({
   paddingTop: "5.25%",
 });
+
+const PlotIcon = (props) => (
+  <SvgIcon {...props} viewBox="0 0 24 24">
+    <path
+      d='M12 5C6.5 5 2.03 8.11 1 12c1.03 3.89 5.5 7 11 7s9.97-3.11 11-7c-1.03-3.89-5.5-7-11-7Zm0 11.25A4.25 4.25 0 1 1 12 7.75a4.25 4.25 0 0 1 0 8.5Zm0-6.8a2.55 2.55 0 1 0 0 5.1 2.55 2.55 0 0 0 0-5.1Z'
+      fill='currentColor'
+    />
+  </SvgIcon>
+);
 
 const MediaCard = ({ title, year, genre, rating, image, plot }) => {
   const [expanded, setExpanded] = useState(false);
@@ -94,12 +103,17 @@ const MediaCard = ({ title, year, genre, rating, image, plot }) => {
       </StyledCardContent>
       <CardActions disableSpacing>
         <IconButton
-          aria-label="show more"
+          aria-label={expanded ? "hide plot" : "show plot"}
           onClick={handleExpandClick}
           aria-expanded={expanded}
-          sx={{ transform: expanded ? "rotate(180deg)" : "rotate(0)" }}
+          sx={{
+            marginLeft: "auto",
+            color: "#e50914",
+            transform: expanded ? "scale(1.05)" : "scale(1)",
+            transition: "transform 0.2s ease, color 0.2s ease",
+          }}
         >
-          <AccordionSummary />
+          <PlotIcon />
         </IconButton>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
