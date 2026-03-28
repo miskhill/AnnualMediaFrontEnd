@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { apiUrl, tmdbApiKey } from "../../config/env.js";
+import MovieSearch from "../movieSearch.js";
+import { apiUrl } from "../../config/env.js";
 
 const MovieUploadCard = () => {
   const mystyle = {
@@ -17,7 +18,6 @@ const MovieUploadCard = () => {
   };
 
   const navigate = useNavigate();
-  const [searchResults, setSearchResults] = useState([]);
 
   const {
     register,
@@ -40,65 +40,61 @@ const MovieUploadCard = () => {
       });
   };
 
-  const handleSearch = async (event) => {
-    const searchTerm = event.target.value;
-
-    if (searchTerm.length > 2) {
-      const response = await axios.get(
-        `https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&query=${searchTerm}`
-      );
-      setSearchResults(response.data.results);
+  const handleSelectMovie = (movieDetails) => {
+    if (!movieDetails) {
+      return;
     }
-  };
 
-  const handleSelectMovie = async (movieId) => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${tmdbApiKey}`
+    const fieldOptions = { shouldValidate: true, shouldDirty: true };
+    const director = movieDetails.credits?.crew
+      ?.filter((person) => person.job === "Director")
+      .map((person) => person.name)
+      .join(", ");
+    const actors = movieDetails.credits?.cast
+      ?.slice(0, 3)
+      .map((actor) => actor.name)
+      .join(", ");
+
+    setValue("title", movieDetails.title ?? "", fieldOptions);
+    setValue(
+      "year",
+      movieDetails.release_date?.split("-")[0] ?? "",
+      fieldOptions,
     );
-    const movie = response.data;
-    console.log(movie);
-    //const director = movie.credits.crew.find((person) => person.job === "Director").name;
-    const poster = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-    // const actors = movie.credits.cast.slice(0, 3).map((actor) => actor.name).join(", ");
-    const plot = movie.overview;
-    const rating = movie.vote_average.toString();
-
-    // Autofill the form fields
-    setValue("title", movie.title);
-    setValue("year", movie.release_date.split("-")[0]);
-    setValue("genre", movie.genres.map((genre) => genre.name).join(", "));
-    setValue("poster", `https://image.tmdb.org/t/p/w500${movie.poster_path}`);
-    setValue("plot", movie.overview);
-    setValue("rating", Math.round(movie.vote_average).toString());
+    setValue(
+      "genre",
+      movieDetails.genres?.map((genre) => genre.name).join(", ") ?? "",
+      fieldOptions,
+    );
+    setValue(
+      "director",
+      director ?? "",
+      fieldOptions,
+    );
+    setValue(
+      "poster",
+      movieDetails.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
+        : "",
+      fieldOptions,
+    );
+    setValue("actors", actors ?? "", fieldOptions);
+    setValue("plot", movieDetails.overview ?? "", fieldOptions);
+    setValue(
+      "rating",
+      movieDetails.vote_average
+        ? Math.round(movieDetails.vote_average).toString()
+        : "",
+      fieldOptions,
+    );
   };
 
   return (
     <>
       <h1>Movie Upload</h1>
       <form onSubmit={handleSubmit(onSubmit)} style={mystyle}>
-        {/* register your input into the hook by invoking the "register" function */}
-        {/* include validation with required or other standard HTML validation rules */}
-        <input placeholder="Search Movie" onChange={handleSearch} />
-        {searchResults.slice(0, 5).map((movie) => (
-          <div
-            key={movie.id}
-            onClick={() => handleSelectMovie(movie.id)}
-            style={{
-              cursor: "pointer",
-              backgroundColor: "#f8f9fa",
-              padding: "2px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              marginBottom: "5px",
-              fontSize: "0.6rem",
-              color: "#333",
-            }}
-          >
-            {movie.title}
-          </div>
-        ))}
+        <MovieSearch onSelectMovie={handleSelectMovie} maxResults={5} />
         <input placeholder="Title" {...register("title", { required: true })} />
-        {/* errors will return when field validation fails  */}
         {errors.title && <span>The title is required</span>}
 
         <input placeholder="Year" {...register("year", { required: true })} />
