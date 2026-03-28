@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import MediaCard from "./card.js";
-import axios from "axios";
 import AnnualTotals from "./utils/annualTotals.js";
 import Filters from "./utils/filters.js";
 import { Grid } from "@mui/material";
 import { apiUrl } from "../config/env.js";
+import fetchWithWakeRetry from "../utils/fetchWithWakeRetry.js";
 
 const Series = () => {
   const [series, setSeries] = useState([]);
@@ -15,19 +15,34 @@ const Series = () => {
   const [selectedYear, setSelectedYear] = useState("All");
 
   useEffect(() => {
-    setLoading(true);
-    try {
-      axios
-        .get(`${apiUrl}/series`)
-        .then((res) => {
-          setSeries(res.data);
+    let isActive = true;
+
+    const getSeries = async () => {
+      setLoading(true);
+
+      try {
+        const res = await fetchWithWakeRetry(`${apiUrl}/series`);
+
+        if (!isActive) {
+          return;
+        }
+
+        setSeries(res.data);
+      } catch (err) {
+        console.log(err, "catch error");
+      } finally {
+        if (isActive) {
           setLoading(false);
-        });
-    } catch (err) {
-      console.log(err, "catch error");
-    }
+        }
+      }
+    };
+
+    getSeries();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
-  
 
   const handleFilterChange = (event) => {
     setSearchTerm(event.target.value);

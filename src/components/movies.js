@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import MediaCard from "./card.js";
 import { Grid } from "@mui/material";
-import axios from "axios";
 import AnnualTotals from "./utils/annualTotals.js";
 import Filters from "./utils/filters.js";
 import { apiUrl } from "../config/env.js";
+import fetchWithWakeRetry from "../utils/fetchWithWakeRetry.js";
 
 const Movies = () => {
   const PAGE_SIZE = 20;
@@ -41,18 +41,34 @@ const Movies = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${apiUrl}/movies`)
-      .then((res) => {
+    let isActive = true;
+
+    const getMovies = async () => {
+      setLoading(true);
+
+      try {
+        const res = await fetchWithWakeRetry(`${apiUrl}/movies`);
+
+        if (!isActive) {
+          return;
+        }
+
         setMovies(res.data);
-        setLoading(false);
         console.log(res.data, "render data");
-      })
-      .catch((err) => {
+      } catch (err) {
         console.log(err, "catch error");
-        setLoading(false);
-      });
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    getMovies();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   const handleFilterChange = (event) => {

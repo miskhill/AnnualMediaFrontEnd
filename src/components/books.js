@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Filters from "./utils/filters.js";
-import axios from "axios";
 import AnnualTotals from "./utils/annualTotals.js";
 import BookGrid from "./bookGrid.js";
 import { apiUrl } from "../config/env.js";
+import fetchWithWakeRetry from "../utils/fetchWithWakeRetry.js";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
@@ -14,19 +14,34 @@ const Books = () => {
   const [selectedYear, setSelectedYear] = useState("All");
 
   useEffect(() => {
-    setLoading(true);
+    let isActive = true;
+
     const getBooks = async () => {
+      setLoading(true);
+
       try {
-        const { data } = await axios.get(`${apiUrl}/books`);
+        const { data } = await fetchWithWakeRetry(`${apiUrl}/books`);
+
+        if (!isActive) {
+          return;
+        }
+
         console.log(data, "render data");
         setBooks(Object.values({ ...data }));
-        setLoading(false);
       } catch (err) {
         console.log(err, "<-- catch error");
-        setLoading(false);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
       }
     };
+
     getBooks();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   const handleFilterChange = (event) => {
