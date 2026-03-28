@@ -3,6 +3,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import BookSearch from "../bookSearch.js";
+import { apiUrl } from "../../config/env.js";
 
 const BookUploadCard = () => {
   const mystyle = {
@@ -24,11 +25,6 @@ const BookUploadCard = () => {
     setValue,
     formState: { errors },
   } = useForm();
-
-  const apiUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:4000/api"
-      : "https://annualmediaserver.onrender.com/api";
 
   const onSubmit = (book) => {
     axios

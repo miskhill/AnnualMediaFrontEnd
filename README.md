@@ -14,8 +14,8 @@ Annual Media keeps track of every film, series, and book I get through in a year
 ## Technology Stack
 - **Front end:** React 18, React Router, React Hook Form, Material UI 5, styled-components, Sonner toasts.
 - **State & data:** Axios hitting my [Annual Media API](https://annualmediaserver.onrender.com/api/movies) (Node, Express, MongoDB) with JWT auth.
-- **Tooling:** Vercel (hosting), Render (API hosting), ESLint (CRA defaults), npm scripts.
-- **Testing:** Jest + React Testing Library. Current focus is the auth flow (login form + protected routes). Command: `WATCHMAN_SUSPEND=1 npm test -- --watch=false` on macOS when Watchman permissions complain.
+- **Tooling:** Vite, Vercel (hosting), Render (API hosting), npm scripts.
+- **Testing:** Vitest + React Testing Library. Current focus is the auth flow (login form + protected routes). Command: `npm test`.
 
 ## Architecture Snapshot
 - `context/AuthContext.js` stores the token, syncs it with `localStorage`, and applies the JWT to every Axios request.
@@ -26,11 +26,11 @@ Annual Media keeps track of every film, series, and book I get through in a year
 ## Deployment Notes
 - Front end: auto-deployed from `main` to Vercel.
 - API: Render free tier. It naps when idle, so the first login/request may take a few seconds while it wakes up.
-- Environment variables: only the API holds secrets (`SECRET`, database URI). The client just needs the API base URL baked into `AuthContext`.
+- Environment variables: the client reads `VITE_API_BASE_URL` and `VITE_TMDB_API_KEY` from local env files; keep server-only secrets out of the frontend bundle.
 
 ## Roadmap-ish
 - Open up social/OAuth login once I’m ready to let friends in.
-- Sprinkle in a few more targeted Jest suites (sorting, pagination) and wire GitHub Actions for CI.
+- Sprinkle in a few more targeted Vitest suites (sorting, pagination) and wire GitHub Actions for CI.
 - Polish the upload flow and expose it via an admin dashboard.
 - React Native mobile app
 

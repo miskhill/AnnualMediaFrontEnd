@@ -3,6 +3,7 @@ import axios from "axios";
 import { Toaster, toast } from 'sonner'
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../config/env.js";
 
 const SeriesUploadCard = () => {
   const mystyle = {
@@ -26,7 +27,7 @@ const SeriesUploadCard = () => {
   console.log(errors)
   const onSubmit = (series) => {
     axios
-      .post("https://annualmediaserver.onrender.com/api/series", series)
+      .post(`${apiUrl}/series`, series)
       .then((res) => {
         console.log(res.data);
         if (res.status === 201) {

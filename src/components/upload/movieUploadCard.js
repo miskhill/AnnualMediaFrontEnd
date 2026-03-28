@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { apiUrl, tmdbApiKey } from "../../config/env.js";
 
 const MovieUploadCard = () => {
   const mystyle = {
@@ -25,11 +26,6 @@ const MovieUploadCard = () => {
     formState: { errors },
   } = useForm();
 
-  const apiUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:4000/api"
-      : "https://annualmediaserver.onrender.com/api";
-
   const onSubmit = (movie) => {
     axios
       .post(`${apiUrl}/movies`, movie)
@@ -49,7 +45,7 @@ const MovieUploadCard = () => {
 
     if (searchTerm.length > 2) {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&query=${searchTerm}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${tmdbApiKey}&query=${searchTerm}`
       );
       setSearchResults(response.data.results);
     }
@@ -57,7 +53,7 @@ const MovieUploadCard = () => {
 
   const handleSelectMovie = async (movieId) => {
     const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.REACT_APP_TMDB_API_KEY}`
+      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${tmdbApiKey}`
     );
     const movie = response.data;
     console.log(movie);

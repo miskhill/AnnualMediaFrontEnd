@@ -1,16 +1,25 @@
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import {
+  afterEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import ProtectedRoute from "./ProtectedRoute.js";
 import { useAuth } from "../../context/AuthContext.js";
 
-jest.mock("../../context/AuthContext.js", () => ({
-  useAuth: jest.fn(),
+vi.mock("../../context/AuthContext.js", () => ({
+  useAuth: vi.fn(),
 }));
 
 const renderWithRoutes = () =>
   render(
-    <MemoryRouter initialEntries={["/movies"]}>
+    <MemoryRouter
+      future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+      initialEntries={["/movies"]}
+    >
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route path="/movies" element={<div>Private Content</div>} />
@@ -22,7 +31,7 @@ const renderWithRoutes = () =>
 
 describe("ProtectedRoute", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("redirects to the login page when the user is not authenticated", () => {

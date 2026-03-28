@@ -4,6 +4,7 @@ import { Grid } from "@mui/material";
 import axios from "axios";
 import AnnualTotals from "./utils/annualTotals.js";
 import Filters from "./utils/filters.js";
+import { apiUrl } from "../config/env.js";
 
 const Movies = () => {
   const PAGE_SIZE = 20;
@@ -42,13 +43,7 @@ const Movies = () => {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(
-        `${
-          process.env.NODE_ENV === "development"
-            ? "http://localhost:4000/api/movies"
-            : "https://annualmediaserver.onrender.com/api/movies"
-        }`
-      )
+      .get(`${apiUrl}/movies`)
       .then((res) => {
         setMovies(res.data);
         setLoading(false);

@@ -1,17 +1,23 @@
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import Login from "./Login.js";
 import { useAuth } from "../../context/AuthContext.js";
 
-jest.mock("../../context/AuthContext.js", () => ({
-  useAuth: jest.fn(),
+vi.mock("../../context/AuthContext.js", () => ({
+  useAuth: vi.fn(),
 }));
 
-const mockNavigate = jest.fn();
+const mockNavigate = vi.fn();
 
-jest.mock("react-router-dom", () => {
-  const actual = jest.requireActual("react-router-dom");
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useNavigate: () => mockNavigate,
@@ -20,18 +26,21 @@ jest.mock("react-router-dom", () => {
 
 const renderLogin = () =>
   render(
-    <MemoryRouter initialEntries={["/login"]}>
+    <MemoryRouter
+      future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+      initialEntries={["/login"]}
+    >
       <Login />
     </MemoryRouter>
   );
 
 describe("Login", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("submits credentials and navigates on success", async () => {
-    const loginMock = jest.fn().mockResolvedValue({ id: "123" });
+    const loginMock = vi.fn().mockResolvedValue({ id: "123" });
 
     useAuth.mockReturnValue({
       login: loginMock,
@@ -60,7 +69,7 @@ describe("Login", () => {
   });
 
   it("displays an error message when login fails", async () => {
-    const loginMock = jest.fn().mockRejectedValue(new Error("Invalid credentials"));
+    const loginMock = vi.fn().mockRejectedValue(new Error("Invalid credentials"));
 
     useAuth.mockReturnValue({
       login: loginMock,

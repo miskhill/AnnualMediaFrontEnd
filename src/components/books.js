@@ -3,6 +3,7 @@ import Filters from "./utils/filters.js";
 import axios from "axios";
 import AnnualTotals from "./utils/annualTotals.js";
 import BookGrid from "./bookGrid.js";
+import { apiUrl } from "../config/env.js";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
@@ -16,13 +17,7 @@ const Books = () => {
     setLoading(true);
     const getBooks = async () => {
       try {
-        const { data } = await axios.get(
-          `${
-            process.env.NODE_ENV === "development"
-              ? "http://localhost:4000/api/books"
-              : "https://annualmediaserver.onrender.com/api/books"
-          }`
-        );
+        const { data } = await axios.get(`${apiUrl}/books`);
         console.log(data, "render data");
         setBooks(Object.values({ ...data }));
         setLoading(false);

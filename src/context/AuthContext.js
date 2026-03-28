@@ -7,13 +7,10 @@ import {
   useMemo,
   useState,
 } from "react";
+import { apiBaseUrl } from "../config/env.js";
 
 const TOKEN_STORAGE_KEY = "am_token";
 const USER_STORAGE_KEY = "am_user";
-const API_BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:4000"
-    : "https://annualmediaserver.onrender.com";
 
 const AuthContext = createContext(null);
 
@@ -74,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     async (email, password) => {
       setIsAuthenticating(true);
       try {
-        const { data } = await axios.post(`${API_BASE_URL}/api/auth/login`, {
+        const { data } = await axios.post(`${apiBaseUrl}/api/auth/login`, {
           email,
           password,
         });

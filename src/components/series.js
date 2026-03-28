@@ -4,6 +4,7 @@ import axios from "axios";
 import AnnualTotals from "./utils/annualTotals.js";
 import Filters from "./utils/filters.js";
 import { Grid } from "@mui/material";
+import { apiUrl } from "../config/env.js";
 
 const Series = () => {
   const [series, setSeries] = useState([]);
@@ -17,7 +18,7 @@ const Series = () => {
     setLoading(true);
     try {
       axios
-        .get(`${process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api/series' : 'https://annualmediaserver.onrender.com/api/series'}`)
+        .get(`${apiUrl}/series`)
         .then((res) => {
           setSeries(res.data);
           setLoading(false);
