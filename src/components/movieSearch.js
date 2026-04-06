@@ -47,18 +47,21 @@ const styles = {
   },
   resultsHeader: {
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     gap: "12px",
     flexWrap: "wrap",
   },
   resultsCount: {
     fontSize: "0.8rem",
     color: "#d1d5db",
+    textAlign: "center",
   },
   pagination: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
     gap: "8px",
   },
   paginationButton: {
