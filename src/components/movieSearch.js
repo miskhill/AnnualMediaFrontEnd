@@ -45,6 +45,48 @@ const styles = {
     fontSize: "0.9rem",
     color: "#fee2e2",
   },
+  resultsHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px",
+    flexWrap: "wrap",
+  },
+  resultsCount: {
+    fontSize: "0.8rem",
+    color: "#d1d5db",
+  },
+  pagination: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  paginationButton: {
+    width: "28px",
+    height: "28px",
+    borderRadius: "999px",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    color: "#f9fafb",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    cursor: "pointer",
+    fontSize: "0.95rem",
+    lineHeight: 1,
+    transition: "background-color 0.2s ease, opacity 0.2s ease",
+  },
+  paginationButtonDisabled: {
+    opacity: 0.45,
+    cursor: "not-allowed",
+  },
+  paginationLabel: {
+    fontSize: "0.8rem",
+    color: "#e5e7eb",
+    minWidth: "72px",
+    textAlign: "center",
+  },
   list: {
     listStyle: "none",
     margin: 0,
@@ -148,6 +190,12 @@ export const MovieSearch = ({
   const [isFetchingDetails, setIsFetchingDetails] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [hoveredMovieId, setHoveredMovieId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const pageSize = useMemo(
+    () => (Number.isFinite(maxResults) && maxResults > 0 ? maxResults : null),
+    [maxResults],
+  );
 
   const canSearch = useMemo(
     () => query.trim().length >= MIN_QUERY_LENGTH,
@@ -159,6 +207,7 @@ export const MovieSearch = ({
       setResults([]);
       setIsLoading(false);
       setError(null);
+      setCurrentPage(0);
       return undefined;
     }
 
@@ -166,6 +215,7 @@ export const MovieSearch = ({
       setResults([]);
       setIsLoading(false);
       setError("TMDB search is not configured. Add VITE_TMDB_API_KEY.");
+      setCurrentPage(0);
       return undefined;
     }
 
@@ -192,11 +242,8 @@ export const MovieSearch = ({
         const normalizedResults = Array.isArray(response.data?.results)
           ? response.data.results
           : [];
-        const limitedResults =
-          Number.isFinite(maxResults) && maxResults > 0
-            ? normalizedResults.slice(0, maxResults)
-            : normalizedResults;
-        setResults(limitedResults);
+        setResults(normalizedResults);
+        setCurrentPage(0);
       } catch (err) {
         if (!isActive) {
           return;
@@ -208,6 +255,7 @@ export const MovieSearch = ({
             : "Unable to search for movies right now.",
         );
         setResults([]);
+        setCurrentPage(0);
       } finally {
         if (isActive) {
           setIsLoading(false);
@@ -219,7 +267,49 @@ export const MovieSearch = ({
       isActive = false;
       clearTimeout(timeoutId);
     };
-  }, [query, canSearch, maxResults]);
+  }, [query, canSearch]);
+
+  const totalPages = useMemo(() => {
+    if (!pageSize) {
+      return results.length > 0 ? 1 : 0;
+    }
+
+    return Math.ceil(results.length / pageSize);
+  }, [pageSize, results.length]);
+
+  useEffect(() => {
+    if (totalPages === 0 && currentPage !== 0) {
+      setCurrentPage(0);
+      return;
+    }
+
+    if (totalPages > 0 && currentPage > totalPages - 1) {
+      setCurrentPage(totalPages - 1);
+    }
+  }, [currentPage, totalPages]);
+
+  const visibleResults = useMemo(() => {
+    if (!pageSize) {
+      return results;
+    }
+
+    const startIndex = currentPage * pageSize;
+    return results.slice(startIndex, startIndex + pageSize);
+  }, [currentPage, pageSize, results]);
+
+  const visibleRangeLabel = useMemo(() => {
+    if (results.length === 0) {
+      return null;
+    }
+
+    if (!pageSize) {
+      return `1-${results.length} of ${results.length}`;
+    }
+
+    const startIndex = currentPage * pageSize + 1;
+    const endIndex = Math.min(startIndex + pageSize - 1, results.length);
+    return `${startIndex}-${endIndex} of ${results.length}`;
+  }, [currentPage, pageSize, results.length]);
 
   const handleResultClick = async (movie) => {
     if (!movie?.id) {
@@ -254,6 +344,7 @@ export const MovieSearch = ({
   };
 
   const showEmptyState = !isLoading && !error && canSearch && results.length === 0;
+  const showPagination = Boolean(pageSize && results.length > pageSize);
 
   return (
     <div style={styles.container}>
@@ -279,8 +370,48 @@ export const MovieSearch = ({
         <div style={styles.status}>No movies found. Try another search.</div>
       )}
 
+      {results.length > 0 && (
+        <div style={styles.resultsHeader}>
+          <div style={styles.resultsCount}>
+            {showPagination
+              ? `Showing search matches in groups of ${pageSize}.`
+              : `${results.length} result${results.length === 1 ? "" : "s"} found.`}
+          </div>
+
+          {showPagination && (
+            <div style={styles.pagination}>
+              <button
+                type="button"
+                style={mergeStyles(styles.paginationButton, [
+                  currentPage === 0 && styles.paginationButtonDisabled,
+                ])}
+                onClick={() => setCurrentPage((page) => Math.max(page - 1, 0))}
+                disabled={currentPage === 0}
+                aria-label="Show previous movie results"
+              >
+                ‹
+              </button>
+              <div style={styles.paginationLabel}>{visibleRangeLabel}</div>
+              <button
+                type="button"
+                style={mergeStyles(styles.paginationButton, [
+                  currentPage >= totalPages - 1 && styles.paginationButtonDisabled,
+                ])}
+                onClick={() =>
+                  setCurrentPage((page) => Math.min(page + 1, totalPages - 1))
+                }
+                disabled={currentPage >= totalPages - 1}
+                aria-label="Show more movie results"
+              >
+                ›
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <ul style={styles.list}>
-        {results.map((movie) => {
+        {visibleResults.map((movie) => {
           const isActiveItem = activeMovieId === movie.id && isFetchingDetails;
           const isHovered = hoveredMovieId === movie.id;
           const year = formatReleaseYear(movie.release_date);
