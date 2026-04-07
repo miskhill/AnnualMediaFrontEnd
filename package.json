@@ -14,7 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.13.6",
     "react": "^18.0.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^19.2.4",
     "react-hook-form": "^7.42.0",
     "react-router-dom": "^6.30.2",
     "sonner": "^0.3.0"
