@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { Toaster, toast } from 'sonner'
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import SeriesSearch from "../seriesSearch.js";
 import { apiUrl } from "../../config/env.js";
 
 const SeriesUploadCard = () => {
@@ -22,9 +22,10 @@ const SeriesUploadCard = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
-  console.log(errors)
+
   const onSubmit = (series) => {
     axios
       .post(`${apiUrl}/series`, series)
@@ -39,21 +40,43 @@ const SeriesUploadCard = () => {
       });
   };
 
+  const handleSelectSeries = (seriesDetails) => {
+    if (!seriesDetails) {
+      return;
+    }
+
+    const fieldOptions = { shouldValidate: true, shouldDirty: true };
+
+    setValue("title", seriesDetails.title ?? "", fieldOptions);
+    setValue("year", seriesDetails.year ?? "", fieldOptions);
+    setValue("genre", seriesDetails.genres?.join(", ") ?? "", fieldOptions);
+    setValue(
+      "actors",
+      seriesDetails.actors?.slice(0, 3).join(", ") ?? "",
+      fieldOptions,
+    );
+    setValue("poster", seriesDetails.posterUrl ?? "", fieldOptions);
+    setValue("plot", seriesDetails.summary ?? "", fieldOptions);
+    setValue(
+      "rating",
+      seriesDetails.ratingAverage
+        ? Math.round(seriesDetails.ratingAverage).toString()
+        : "",
+      fieldOptions,
+    );
+  };
+
   return (
     <>
-      <Toaster position="bottom-center" richColors />
       <h1>Series Upload</h1>
-      <form onSubmit={handleSubmit(onSubmit)} style={mystyle} >
+      <form onSubmit={handleSubmit(onSubmit)} style={mystyle}>
+        <SeriesSearch onSelectSeries={handleSelectSeries} maxResults={5} />
+
         <input placeholder='Title' {...register("title", { required: true })} />
         {errors.title && <span>The title is required</span>}
 
         <input placeholder='Year' {...register("year", { required: true })} />
         {errors.year && <span>The year is required</span>}
-
-        <input
-          placeholder='Director'
-          {...register("director")}
-        />
 
         <input placeholder='Genre' {...register("genre", { required: true })} />
         {errors.genre && <span>The genre is required</span>}
@@ -76,7 +99,7 @@ const SeriesUploadCard = () => {
         <input placeholder='Rating' {...register('rating')} />
         {errors.rating && <span>The rating is required</span>}
 
-        <input className='submit-button' type='submit' value='Submit' onClick={()=> toast.error('error') } />
+        <input className='submit-button' type='submit' value='Submit' />
       </form>
     </>
   );
