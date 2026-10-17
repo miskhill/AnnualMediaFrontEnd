@@ -27,7 +27,7 @@ The frontend is deployed from this repository's `main` branch. The API is mainta
 
 ## Setup and local development
 
-Use Node.js 20 and npm. Install exactly from the lockfile:
+Use Node.js 24 and npm. Install exactly from the lockfile:
 
 ```bash
 npm ci
